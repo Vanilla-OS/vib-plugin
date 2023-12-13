@@ -8,6 +8,8 @@ To use this template, simply fork it and change the module name in go.mod.
 
 Then you can modify the source in src/plugin.go to create your own plugin.
 
+We recommend adding the `vib-plugin` tag to your repo so that it can be discovered by other people.
+
 ## Plugin requirements
 src/plugin.go explains all requirements for plugins with code examples.
 A short tldr:
