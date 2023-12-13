@@ -22,9 +22,11 @@ jobs:
     - name: Build
       run: |
         go get ./...
-        go build -v ./... -trimpath -buildmode=plugin
+        go build -trimpath -buildmode=plugin -o plugin.so -v ./...
 
-    - name: Upload a Release Asset
-      uses: softprops/action-gh-release@v1
+    - name: Upload an artifact
+      uses: actions/upload-artifact@v3
       with:
-        files: vib-plugin.so
+        Name: Vib plugin
+        path: ./plugin.so
+
