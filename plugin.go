@@ -2,7 +2,8 @@ package main
 
 import (
 	"fmt"
-	"github.com/mitchellh/mapstructure"
+	"C"
+	"encoding/json"
 	"github.com/vanilla-os/vib/api"
 )
 
@@ -12,7 +13,7 @@ type ExampleModule struct {
 	Type string `json:"type"`
 
 	// Additional values such as Source can be added here
-	Source api.Source
+	Source api.Source `json:"Source"`
 }
 
 // Plugins can define extra functions that are used internally
@@ -32,18 +33,38 @@ func fetchSources(source api.Source, name string, recipe *api.Recipe) error {
 }
 
 // This is the entry point for plugins that vib calls
-// The arguments are required to be (interface{}, recipe) => (string, error)
-func BuildModule(moduleInterface interface{}, recipe *api.Recipe) (string, error) {
+// The arguments are required to be (*C.char, *C.char) => string
+// Make sure NOT to remove the "export BuildModule"
+
+//export BuildModule
+func BuildModule(moduleInterface *C.char, recipeInterface *C.char) *C.Char {
 	// It is advisable to convert the interface to an actual struct
-	// The use of mapstructure for this is recommended, but not required
-	var module ExampleModule
-	err := mapstructure.Decode(moduleInterface, &module)
+	// The use of json.Unmarshal for this is recommended, but not required
+	var module *ExampleModule
+	var recipe *api.Recipe
+	
+	err := json.Unmarshal([]byte(C.GoString(moduleInterface)), &module)
 	if err != nil {
-		return "", err
+
+		// Due to the way c-shared builds work, the function has to return a CString
+		// CGO includes a proper way to ensure strings are converted to CStrings
+		// Any return in BuildModule will have to be wrapped with C.CString
+		//
+		// Since only one value can be returned, vib checks if the return
+		// starts with "ERROR:", if this is the case, it assumes that the
+		// plugin has failed and takes anything after the "ERROR:" as the
+		// error message.
+		return C.CString(fmt.Sprintf("ERROR: %s", err.Error()))
 	}
+	
+	err = json.Unmarshal([]byte(C.GoString(recipeInterface)), &recipe)
+	if err != nil {
+		return C.CString(fmt.Sprintf("ERROR: %s", err.Error()))
+	}
+	
 	err = fetchSources(module.Source, module.Name, recipe)
 	if err != nil {
-		return "", err
+		return C.CString(fmt.Sprintf("ERROR: %s", err.Error()))
 	}
 
 	// The sources will be made available at /sources/ during build
@@ -51,5 +72,9 @@ func BuildModule(moduleInterface interface{}, recipe *api.Recipe) (string, error
 	// be available in /sources/<modulename>
 	cmd := fmt.Sprintf("cd /sources/%s && cp * /etc/%s", module.Name, module.Name)
 
-	return cmd, nil
+	return C.CString(cmd)
 }
+
+// Keep this function empty
+// It will never be triggered. Any code in here is dead code.
+func main() {}
