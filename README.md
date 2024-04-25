@@ -9,6 +9,8 @@ To use this template, fork it and change the module name in `go.mod`.
 
 Then you can modify the source in `src/plugin.go` to create your plugin.
 
+A couple of test cases should also be added in `src/plugin_test.go`, view [vib-fsguard](https://github.com/vanilla-os/vib) and [vib-pacman](https://github.com/axtloss/vib-plugins/blob/main/pacman/plugin_test.go) for examples.
+
 We recommend adding the `vib-plugin` tag to your repo so other people can discover it.
 
 ## Plugin requirements
