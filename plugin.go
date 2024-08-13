@@ -32,6 +32,23 @@ func fetchSources(source api.Source, name string, recipe *api.Recipe) error {
 	return err
 }
 
+
+// This function returns information about the plugin, most notably the type of plugin.
+// Plugins that do not define this function are considered deprecated
+// while they still work, support may be dropped in future releases.
+//export PlugInfo
+func PlugInfo() *C.char {
+	plugininfo := &api.PluginInfo{
+		Name: "PLUGINAME", // The name of the plugin
+		Type: api.BuildPlugin // The type of plugin. This plugin template does NOT function as a FinalizePlugin, so unless you have manually modified it accordingly, this value should stay as api.BuildPlugin
+	}
+	pluginjson, err := json.Marshal(plugininfo)
+	if err != nil {
+		return C.CString(fmt.Sprintf("ERROR: %s", err.Error()))
+	}
+	return C.CString(string(pluginjson))
+}
+
 // This is the entry point for plugins that vib calls
 // The arguments are required to be (*C.char, *C.char) => string
 // Make sure NOT to remove the "export BuildModule"

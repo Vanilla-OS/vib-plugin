@@ -20,6 +20,7 @@ We recommend adding the `vib-plugin` tag to your repo so other people can discov
 A short tldr:
 
 - vib requires `BuildModule(moduleInterface *C.char, recipeInterface *C.char) *C.char` to be available as it is used as the entry point for the plugin. Any other functions can be freely declared and will not be used by vib
+- plugins need to pass their name and plugin type through the `PlugInfo() *C.Char` function, the api contains a struct of `api.PluginInfo` which makes this easier, vib expects this function to return a json marshalled version of this struct
 - Each plugin needs to have a custom struct for the module, with at least two mandatory values: `Name string` and `Type string`
 - It is recommended, but not required, to use the api functions for source definition or downloading sources
 
