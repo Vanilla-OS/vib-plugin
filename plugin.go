@@ -40,7 +40,7 @@ func fetchSources(source api.Source, name string, recipe *api.Recipe) error {
 func PlugInfo() *C.char {
 	plugininfo := &api.PluginInfo{
 		Name: "PLUGINAME", // The name of the plugin
-		Type: api.BuildPlugin // The type of plugin. This plugin template does NOT function as a FinalizePlugin, so unless you have manually modified it accordingly, this value should stay as api.BuildPlugin
+		Type: api.BuildPlugin, // The type of plugin. This plugin template does NOT function as a FinalizePlugin, so unless you have manually modified it accordingly, this value should stay as api.BuildPlugin
 	}
 	pluginjson, err := json.Marshal(plugininfo)
 	if err != nil {
