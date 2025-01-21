@@ -41,6 +41,7 @@ func PlugInfo() *C.char {
 	plugininfo := &api.PluginInfo{
 		Name: "PLUGINAME", // The name of the plugin
 		Type: api.BuildPlugin, // The type of plugin. This plugin template does NOT function as a FinalizePlugin, so unless you have manually modified it accordingly, this value should stay as api.BuildPlugin
+		UseContainerCmds: False, // If the plugin adds its own Containerfile directives, set it to False if the plugin only generates shell commands
 	}
 	pluginjson, err := json.Marshal(plugininfo)
 	if err != nil {
