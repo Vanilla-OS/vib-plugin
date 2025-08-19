@@ -55,7 +55,7 @@ func PlugInfo() *C.char {
 // Make sure NOT to remove the "export BuildModule"
 
 //export BuildModule
-func BuildModule(moduleInterface *C.char, recipeInterface *C.char) *C.Char {
+func BuildModule(moduleInterface *C.char, recipeInterface *C.char, arch *C.char) *C.Char {
 	// It is advisable to convert the interface to an actual struct
 	// The use of json.Unmarshal for this is recommended, but not required
 	var module *ExampleModule
